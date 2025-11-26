@@ -1,27 +1,20 @@
 ## Deployment Link
 
-url = https://kapadibinod-quizgenerator077.streamlit.app/
+url = https://binodkapadi-notessummarizer.streamlit.app/
 
-         https://kapadibinod-quizgenerator077.streamlit.app/
-
-
-## notes-to-quiz-generator-binod-kapadi-12201221
-Quiz Generator automatically converts any set of notes or prompt into interactive quiz questions (MCQs) using AI.
+       https://binodkapadi-notessummarizer.streamlit.app/
 
 
-## Project Overview
-Convert your class notes or text into interactive quizzes using AI.
+## NotesSummarizer
+The Note Summarizer processes long pasted notes and uploaded files, including PDF, DOCX, PPT, images (JPEG/PNG), and more, converting them into clear and human-friendly notes. It analyzes the entire document thoroughly and produces well-structured, easy-to-read summaries with proper spacing, alignment, and topic-wise clarity. The tool supports multiple formats and ensures that all extracted content is presented in a simple, understandable, and organized manner.
 
 
 ## Problem Statement
-Students often take detailed notes but struggle to revise them effectively.
-Manually creating quizzes from notes is time-consuming, making it hard to practice and retain knowledge efficiently.
+Students, professionals, and learners often deal with lengthy notes, PDFs, documents, and presentations that are difficult to read, revise, and organize. Manually summarizing large amounts of information is time-consuming and overwhelming, making it harder to prepare well-structured study material.
 
 
 ## Solution Summary
-The Notes-to-Quiz Generator is an AI-driven web application that transforms written notes into interactive quizzes for effective self-assessment.
-Users can paste their notes, choose a quiz difficulty level, and instantly generate AI-created questions with correct answers.
-
+The Note Summarizer is an AI-powered tool that converts long pasted notes and uploaded files (PDF, DOCX, PPT, JPEG, PNG, etc.) into clean, human-friendly summaries. It analyzes the entire document and generates clear, well-organized, topic-wise notes with proper spacing and alignment to make revision easier, faster, and more effective.
 
 ## Tech Stack
 
@@ -39,7 +32,8 @@ QUIZGENERATOR
     - .env                                     # Environment variables (contains GEMINI_API_KEY)
     - requirements.txt                         # Project dependencies
     - README.md                                # Project documentation
-    - .gitignore                               # For hiding api key ( or other sensitive information)
+    - .gitignore                               # For hiding api key ( or other sensitive
+    information)
     -  venv/                                   # Virtual environment directory 
 
 
@@ -66,13 +60,7 @@ QUIZGENERATOR
    By default, the app runs on:
    
         http://localhost:8501
-   
-9. Generate a Quiz
-    
-       - Paste any text or notes into the textarea
-       - Select quiz difficulty level (Easy / Medium / Hard)
-       - Click “🚀 Generate Quiz”
-       - Attempt questions and click “Submit” to view your score
+
   
 11. To stop the Streamlit App
     
@@ -97,18 +85,30 @@ QUIZGENERATOR
         http://localhost:8501
         
 ## Features
-- Converts text notes into interactive quizzes automatically.
-- Generates multiple-choice, True/False, and short-answer questions.
-- Clean, intuitive UI with real-time quiz generation.
-- Real-world applicability for students, educators, and self-learners.
+- Summarizes long notes, PDFs, DOCX, PPTs, and images into clear, human-friendly study material.
+- Automatically organizes content into topic-wise sections with proper spacing and alignment.
+- Supports multiple file formats including PDF, DOCX, PPT, JPG, PNG, and pasted text.
+- Clean and intuitive UI for fast document uploading and instant summary generation.
+- Useful for students, teachers, and professionals who need quick, readable summaries.
 
 
 ## Technical Architecture
-The system allows users to paste notes or text, sends the content to the Google Gemini API, and automatically generates multiple-choice quiz questions (MCQs) that are displayed interactively in the Streamlit interface.
+The system allows users to upload files (PDF, DOCX, PPT, images) or paste long notes, then processes the content using the Google Gemini API to generate structured, easy-to-read summaries with topic-wise formatting.
 
-   - ASCII Architecture Diagram:
+     ASCII Architecture Diagram:
      
-         Frontend (Streamlit UI)   ->    User pastes notes or text   ->    Backend (Python + Google GenAI)    ->    Google Gemini API    ->     Generates MCQs in JSON format     ->     Backend processes questions       ->      Frontend displays interactive quiz
+         Frontend (Streamlit UI)  
+                  ↓  User uploads file / pastes notes  
+         Backend (Python + Google GenAI)  
+                  ↓  
+         Google Gemini API  
+                  ↓  
+         Generates structured summary text  
+                  ↓  
+         Backend formats into clean readable notes  
+                  ↓  
+         Frontend displays human-friendly summarized notes
+
 
 
 ## References
@@ -118,10 +118,6 @@ The system allows users to paste notes or text, sends the content to the Google 
     python-dotenv
 
 
-## License
-This project is licensed under the MIT License.
-
-
 ## Acknowledgements
  - Developed by Binod Kapadi (12201221)
- - Special thanks to Google Gemini for powering AI question generation.
+ - Special thanks to Google Gemini for enabling AI-powered document analysis and summarization.
