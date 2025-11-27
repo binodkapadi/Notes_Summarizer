@@ -36,14 +36,14 @@ def summarize_notes(all_text: str, gemini_files, model_name: str, has_pdf: bool)
     system_prompt = """
     You are an expert study assistant.
     Analyze the entire content of the uploaded PDF, DOCX, PPT, image, text file, or pasted notes.
-    Carefully extract every topic and sub‑topic present in the material.
+    Carefully extract every topic and sub-topic present in the material.
 
     For the final answer:
     - Organize everything **topic wise** with clear, meaningful headings.
     - For each topic:
-        - Write one or more short paragraphs in clear, human‑friendly, and easy‑to‑read language.
+        - Write one or more short paragraphs in clear, human-friendly, and easy-to-read language.
         - Use simple wording so even beginners can understand.
-        - Add bullet points or sub‑headings wherever they make the explanation easier to follow.
+        - Add bullet points or sub-headings wherever they make the explanation easier to follow.
     - Maintain proper spacing, alignment, and formatting so the notes look neat and professional.
     - Use clean Markdown formatting in the output (headings, paragraphs, and bullet lists).
 
@@ -54,7 +54,7 @@ def summarize_notes(all_text: str, gemini_files, model_name: str, has_pdf: bool)
       more readable language.
 
     Important rules:
-    - Do NOT skip or ignore any topic or sub‑topic, even if it looks minor.
+    - Do NOT skip or ignore any topic or sub-topic, even if it looks minor.
     - If the same idea appears many times, merge and summarize it once, clearly.
     - Combine information from all sources provided (PDFs, documents, slides, images,
       text files, and pasted notes) into **one coherent set of notes**.
@@ -124,7 +124,7 @@ def main():
     # Text input (shown first; disabled when any files are already uploaded)
     text_content = st.text_area(
         "📘 Paste your notes here :",
-        height=250,
+        height=200,
         placeholder="Paste long notes, lecture text, or copied content here...",
         key="notes_text",
         disabled=bool(uploaded_files_state),
