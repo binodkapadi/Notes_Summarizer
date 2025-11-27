@@ -26,7 +26,7 @@ MODEL_OPTIONS = {
 
 def summarize_notes(all_text: str, gemini_files, model_name: str, has_pdf: bool) -> str:
     """
-    Call Gemini to create thorough, human‑friendly study notes from text + uploaded files.
+    Call Gemini to create thorough, human-friendly study notes from text + uploaded files.
     """
     if not all_text and not gemini_files:
         raise ValueError("No content provided to summarize.")
