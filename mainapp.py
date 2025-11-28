@@ -113,9 +113,9 @@ def render_footer():
 def main():
     st.title("📝 Notes Summarizer")
 
-    # Optional dark mode CSS
+    # Optional dark mode CSS (force UTF-8 to avoid Windows cp1252 decode errors)
     if os.path.exists("style.css"):
-        with open("style.css") as f:
+        with open("style.css", "r", encoding="utf-8", errors="ignore") as f:
             st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
     # Check existing uploaded files in session to decide whether to disable text input
@@ -135,10 +135,10 @@ def main():
 
     # File upload: PDFs, Word docs, PowerPoints, text files, and images
     uploaded_files = st.file_uploader(
-        "📂 Or upload notes as PDF, Word, PPT, text, or images (limit 10MB per file):",
+        "📂 Or upload notes as PDF, Word, PPT, text, or images (limit 50MB per file):",
         type=["pdf", "doc", "docx", "ppt", "pptx", "txt", "png", "jpg", "jpeg"],
         accept_multiple_files=True,
-        help="Limit 10MB per file • Supports PDF, DOC/DOCX, PPT/PPTX, TXT, PNG, JPG.",
+        help="Limit 50MB per file • Supports PDF, DOC/DOCX, PPT/PPTX, TXT, PNG, JPG.",
         key="file_uploader",
         disabled=text_has_content,
     )
@@ -179,15 +179,15 @@ def main():
                     text_parts.append(text_content.strip())
 
                 # Handle uploaded files
-                max_bytes = 10 * 1024 * 1024  # 10 MB per file limit
+                max_bytes = 50 * 1024 * 1024  # 50 MB per file limit
                 for uploaded in uploaded_files or []:
                     suffix = Path(uploaded.name).suffix.lower()
 
-                    # Enforce 10 MB limit for each uploaded file
+                    # Enforce 50 MB limit for each uploaded file
                     if uploaded.size > max_bytes:
                         st.warning(
-                            f"'{uploaded.name}' is larger than 10 MB. "
-                            "Please upload a file less than 10 MB to proceed further."
+                            f"'{uploaded.name}' is larger than 50 MB. "
+                            "Please upload a file less than 50 MB to proceed further."
                         )
                         continue
 
