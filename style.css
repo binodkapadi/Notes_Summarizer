@@ -8,10 +8,12 @@ body {
 
 /* App Title */
 h1 {
-    text-align: center;
+    text-align: left;         /* align with left edge of content, like textarea label */
     color: #7dd3fc;
     font-weight: 700;
-    margin-top: 20px;
+    margin-top: 12px;
+    margin-bottom: 8px;
+    margin-left: 0.1rem;      /* tiny offset to visually match '📘 Paste your notes here :' */
 }
 
 /* Top Controls (Select quiz level) */
