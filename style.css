@@ -162,3 +162,11 @@ h4 {
         transform: rotate(360deg);
     }
 }
+
+/* Make the main title fit on one line on smaller mobile devices */
+@media screen and (max-width: 480px) {
+    h1 {
+        font-size: 1.35rem;  /* smaller so '📝 Notes Summarizer' fits in one line */
+        white-space: nowrap; /* prevent wrapping into two lines */
+    }
+}
