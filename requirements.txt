@@ -4,3 +4,6 @@ fastapi
 google-generativeai
 python-docx
 python-pptx
+markdown
+beautifulsoup4
+fpdf

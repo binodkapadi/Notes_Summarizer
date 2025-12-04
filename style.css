@@ -51,7 +51,8 @@ textarea {
 
 /* Generate Quiz Button (Neon Hover) */
 .button-container>button,
-.stButton>button {
+.stButton>button,
+div[data-testid="stDownloadButton"] button {
     display: block;
     margin: 25px auto;
     background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%) !important;
@@ -67,7 +68,8 @@ textarea {
 
 /* Hover Effect */
 .button-container>button:hover,
-.stButton>button:hover {
+.stButton>button:hover,
+div[data-testid="stDownloadButton"] button:hover {
     background: linear-gradient(135deg, #2575fc 0%, #6a11cb 100%) !important;
     transform: scale(1.07);
     box-shadow: 0 0 20px rgba(109, 40, 217, 0.8);
