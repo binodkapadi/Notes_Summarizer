@@ -444,11 +444,12 @@ def main():
                 <meta charset="utf-8" />
                 <title>Summarized Notes</title>
                 <style>
+                  /* Screen styles */
                   body {{
                     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
                     padding: 24px;
                     background-color: #020617;
-                    color: #e5e7eb; /* stronger/brighter text for easier reading */
+                    color: #e5e7eb;
                   }}
                   h1, h2, h3, h4 {{
                     color: #60a5fa;
@@ -473,6 +474,79 @@ def main():
                   }}
                   th {{
                     background-color: #111827;
+                  }}
+                  
+                  /* Print/PDF styles - Remove headers, footers, and overlays */
+                  @media print {{
+                    @page {{
+                      margin: 0.75in;
+                      size: auto;
+                    }}
+                    
+                    /* Remove all browser default headers and footers */
+                    @page {{
+                      margin-top: 0.5in;
+                      margin-bottom: 0.5in;
+                    }}
+                    
+                    /* Hide any overlays or loaders */
+                    .overlay-loader,
+                    .overlay-loader-circle,
+                    .overlay-loader-text,
+                    header,
+                    footer {{
+                      display: none !important;
+                      visibility: hidden !important;
+                    }}
+                    
+                    /* Remove blur effects */
+                    * {{
+                      backdrop-filter: none !important;
+                      -webkit-backdrop-filter: none !important;
+                      filter: none !important;
+                      -webkit-filter: none !important;
+                    }}
+                    
+                    /* Clear, readable content */
+                    body {{
+                      background: white !important;
+                      color: #000000 !important;
+                      padding: 0 !important;
+                      -webkit-print-color-adjust: exact;
+                      print-color-adjust: exact;
+                    }}
+                    
+                    /* Black text for better readability */
+                    h1, h2, h3, h4, h5, h6 {{
+                      color: #000000 !important;
+                      page-break-after: avoid;
+                    }}
+                    
+                    p, li, td, th, span, div {{
+                      color: #000000 !important;
+                    }}
+                    
+                    /* Remove shadows that might cause blur */
+                    * {{
+                      box-shadow: none !important;
+                      text-shadow: none !important;
+                    }}
+                    
+                    /* Ensure tables print well */
+                    table {{
+                      border-collapse: collapse;
+                      page-break-inside: avoid;
+                    }}
+                    
+                    th, td {{
+                      border: 1px solid #000000 !important;
+                      padding: 0.4rem 0.6rem;
+                    }}
+                    
+                    th {{
+                      background-color: #f0f0f0 !important;
+                      color: #000000 !important;
+                    }}
                   }}
                 </style>
               </head>
