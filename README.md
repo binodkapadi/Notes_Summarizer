@@ -22,8 +22,8 @@ Official Website: https://www.python.org/downloads/
 
 During installation:
 
-Check the option "Add Python to PATH"
-Click Install Now
+    Check the option "Add Python to PATH"
+    Click Install Now
 
 Verify installation [Open Command Prompt in Windows]:
 
