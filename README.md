@@ -1,19 +1,105 @@
-## Deployment Link
+# NotesSummarizer
 
-url = https://binodkapadi-notessummarizer.streamlit.app/
+The Note Summarizer processes long pasted notes and uploaded files, including text-based PDF, DOCX, PPT, and images (JPEG/PNG), converting them into clear and human-friendly notes. It analyzes the entire document thoroughly and produces well-structured, easy-to-read summaries with proper spacing, alignment, and topic-wise clarity. The tool works best with digitally generated or printed text (such as books, typed notes, or exported documents) and may not accurately read handwritten content. All extracted information is presented in a simple, understandable, and organized format for easy revision.
 
-       https://binodkapadi-notessummarizer.streamlit.app/
+# Deployment Link
+
+Deployment (Streamlit) = https://binodkapadi-notessummarizer.streamlit.app/
+
+# PROJECT SETUP
+
+pip = Python Package Installer
+
+venv = Python Virtual Environment
+
+### Step 1: Install Required Software
+
+#### A) Install Python
+
+Download and install Python:
+
+Official Website: https://www.python.org/downloads/
+
+During installation:
+
+Check the option "Add Python to PATH"
+Click Install Now
+
+Verify installation [Open Command Prompt in Windows]:
+
+     python --version
+
+#### B) Install Visual Studio Code (Recommended)
+
+Download and install Visual Studio Code:
+
+Official Website: https://code.visualstudio.com
+
+Recommended Extensions:
+
+     Python
+     Pylance
+     Streamlit
+
+### Step 2: Setup Folder Structure
+
+Open VS Code Terminal and create a new folder:
+
+     mkdir NotesSummarizer
+     cd NotesSummarizer
+     python -m venv venv
+     venv\Scripts\activate
+
+First of all, inside the folder create:
+
+* .env
+* requirements.txt
+
+#### Install Dependencies
+
+First put all required dependencies inside requirements.txt file and then run:
+
+    pip install -r requirements.txt
+
+Or install manually if needed:
+
+    pip install streamlit google-generativeai python-dotenv python-pptx python-docx PyPDF2 pillow
+
+#### Configure Environment Variables (.env)
+
+     GEMINI_API_KEY=your_gemini_api_key
+
+Get Gemini API Key from: https://aistudio.google.com/app/apikey
 
 
-## NotesSummarizer
-The Note Summarizer processes long pasted notes and uploaded files, including PDF, DOCX, PPT, images (JPEG/PNG), and more, converting them into clear and human-friendly notes. It analyzes the entire document thoroughly and produces well-structured, easy-to-read summaries with proper spacing, alignment, and topic-wise clarity. The tool supports multiple formats and ensures that all extracted content is presented in a simple, understandable, and organized manner.
+### Step 3: Run the Streamlit Application
 
+#### Run the application:
+
+     streamlit run mainapp.py
+
+By default, the app runs on:
+
+     http://localhost:8501
+
+#### STOP APPLICATION
+
+To stop the Streamlit server:
+
+     CTRL + C
+
+#### DEACTIVATE VIRTUAL ENVIRONMENT
+
+After completing your work:
+
+     deactivate
 
 ## Problem Statement
+
 Students, professionals, and learners often deal with lengthy notes, PDFs, documents, and presentations that are difficult to read, revise, and organize. Manually summarizing large amounts of information is time-consuming and overwhelming, making it harder to prepare well-structured study material.
 
-
 ## Solution Summary
+
 The Note Summarizer is an AI-powered tool that converts long pasted notes and uploaded files (PDF, DOCX, PPT, JPEG, PNG, etc.) into clean, human-friendly summaries. It analyzes the entire document and generates clear, well-organized, topic-wise notes with proper spacing and alignment to make revision easier, faster, and more effective.
 
 ## Tech Stack
@@ -25,78 +111,34 @@ The Note Summarizer is an AI-powered tool that converts long pasted notes and up
     - Version Control: Git and GitHub
 
 ## Project Structure
-QUIZGENERATOR
+
+NOTESSUMMARIZER
 
     - mainapp.py                               # Main Streamlit application
     - style.css                                # Custom UI styling (Dark Mode)
     - .env                                     # Environment variables (contains GEMINI_API_KEY)
     - requirements.txt                         # Project dependencies
     - README.md                                # Project documentation
-    - .gitignore                               # For hiding api key ( or other sensitive
-    information)
-    -  venv/                                   # Virtual environment directory 
+    - .gitignore                               # For hiding api key ( or other sensitive information)
+    - venv/                                    # Virtual environment directory 
 
-
-
-## Setup Instructions (with Python)
-
-1. Create and Activate a Virtual Environment
-   
-       python -m venv venv
-       venv\Scripts\activate
-
-3. Install Dependencies
-   
-       pip install -r requirements.txt
-
-5. Set Up Environment Variables
-   
-       GEMINI_API_KEY=your_google_gemini_api_key_here
-   
-7. Run the Streamlit App
-   
-       streamlit run mainapp.py
-
-   By default, the app runs on:
-   
-        http://localhost:8501
-
-  
-11. To stop the Streamlit App
-    
-        ctrl + c
-
-13. Deactivate the Virtual Environment (After Use)
-    
-        deactivate
-
-
-## Deployment
-   -Activate the virtual environment
-   
-        venv\Scripts\activate
-   
-   - Run the Streamlit App
-     
-         streamlit run mainapp.py
-
-   By default, the app runs on:
-   
-        http://localhost:8501
-        
 ## Features
-- Summarizes long notes, PDFs, DOCX, PPTs, and images into clear, human-friendly study material.
-- Automatically organizes content into topic-wise sections with proper spacing and alignment.
-- Supports multiple file formats including PDF, DOCX, PPT, JPG, PNG, and pasted text.
-- Clean and intuitive UI for fast document uploading and instant summary generation.
-- Useful for students, teachers, and professionals who need quick, readable summaries.
 
+* Summarizes long notes, PDFs, DOCX, PPTs, and images into clear, human-friendly study material.
+* Automatically organizes content into topic-wise sections with proper spacing and alignment.
+* Supports multiple file formats including PDF, DOCX, PPT, JPG, PNG, and pasted text.
+* Clean and intuitive UI for fast document uploading and instant summary generation.
+* Generates readable and structured summaries for easy revision and understanding.
+* Useful for students, teachers, researchers, and professionals.
+* Human-friendly formatting with clean spacing and organized output.
+* AI-powered summarization using Google Gemini API.
 
 ## Technical Architecture
+
 The system allows users to upload files (PDF, DOCX, PPT, images) or paste long notes, then processes the content using the Google Gemini API to generate structured, easy-to-read summaries with topic-wise formatting.
 
      ASCII Architecture Diagram:
-     
+ 
          Frontend (Streamlit UI)  
                   ↓  User uploads file / pastes notes  
          Backend (Python + Google GenAI)  
@@ -109,15 +151,16 @@ The system allows users to upload files (PDF, DOCX, PPT, images) or paste long n
                   ↓  
          Frontend displays human-friendly summarized notes
 
-
-
 ## References
 
-    Streamlit Documentation
-    Google Generative AI SDK
-    python-dotenv
-
+       Streamlit Documentation
+       Google Generative AI SDK
+       python-dotenv
+       PyPDF2 Documentation
+       python-docx Documentation
+       python-pptx Documentation
 
 ## Acknowledgements
- - Developed by Binod Kapadi (12201221)
- - Special thanks to Google Gemini for enabling AI-powered document analysis and summarization.
+
+* Developed by Binod Kapadi
+* Special thanks to Google Gemini for enabling AI-powered document analysis and summarization.
