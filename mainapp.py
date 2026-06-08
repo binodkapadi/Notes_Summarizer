@@ -21,10 +21,10 @@ genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
 # Mapping between human‑friendly names and Gemini model IDs
 MODEL_OPTIONS = {
+    "Gemini Flash-Lite Latest": "gemini-flash-lite-latest",
     "Gemini Flash Latest": "gemini-flash-latest",
     "Gemini 2.5 Flash-Lite Preview": "gemini-2.5-flash-lite-preview-09-2025",
     "Gemini 2.5 Flash": "gemini-2.5-flash",
-    "Gemini Flash-Lite Latest": "gemini-flash-lite-latest",
     "Gemini 2.5 Flash-Lite": "gemini-2.5-flash-lite",
 }
 
