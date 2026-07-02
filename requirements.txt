@@ -1,9 +1,12 @@
 streamlit
 python-dotenv
 fastapi
-google-generativeai
+google-genai
 python-docx
 python-pptx
 markdown
 beautifulsoup4
 fpdf
+PyPDF2
+Pillow
+tenacity

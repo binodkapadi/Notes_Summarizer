@@ -1,9 +1,9 @@
 import os
+import time
 import tempfile
 from io import BytesIO
 from pathlib import Path
-
-import google.generativeai as genai
+from google import genai
 import streamlit as st
 import streamlit.components.v1 as components
 from bs4 import BeautifulSoup
@@ -13,11 +13,14 @@ from fpdf import FPDF
 from markdown import markdown
 from pptx import Presentation
 
+# Set page config as the very first Streamlit command
+st.set_page_config(page_title="Notes Summarizer", page_icon="📝")
+
 # Load environment variables
 load_dotenv()
 
 # Configure Gemini API key
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
 # Mapping between human‑friendly names and Gemini model IDs
 MODEL_OPTIONS = {
@@ -67,35 +70,296 @@ def summarize_notes(all_text: str, gemini_files, model_name: str, has_pdf: bool)
     if not all_text and not gemini_files:
         raise ValueError("No content provided to summarize.")
 
-    model = genai.GenerativeModel(model_name)
+    # The model ID is used directly in the generate_content call
 
     system_prompt = """
-    You are an expert study assistant.
-    Analyze the entire content of the uploaded PDF, DOCX, PPT, image, text file, or pasted notes.
-    Carefully extract every topic and sub-topic present in the material.
+You are a senior AI Engineer, Prompt Engineer, and Full-Stack Developer.
 
-    For the final answer:
-    - Organize everything **topic wise** with clear, meaningful headings.
-    - For each topic:
-        - Write one or more short paragraphs in clear, human-friendly, and easy-to-read language.
-        - Use simple wording so even beginners can understand.
-        - Add bullet points or sub-headings wherever they make the explanation easier to follow.
-    - Maintain proper spacing, alignment, and formatting so the notes look neat and professional.
-    - Use clean Markdown formatting in the output (headings, paragraphs, and bullet lists).
+## Objective
 
-    If the document contains comparisons, pros/cons, or differences:
-    - Detect them across the whole content.
-    - Present the comparison in a structured format similar to the original
-      (tables, bullet lists, or grouped sections), but rewritten in simpler,
-      more readable language.
+Develop an intelligent Notes Generator that creates concise, complete, well-structured study notes from any input source.
 
-    Important rules:
-    - Do NOT skip or ignore any topic or sub-topic, even if it looks minor.
-    - If the same idea appears many times, merge and summarize it once, clearly.
-    - Combine information from all sources provided (PDFs, documents, slides, images,
-      text files, and pasted notes) into **one coherent set of notes**.
-    - Use ONLY the information given in the notes; do not invent extra facts.
-    - Do NOT add extra commentary about being an AI model.
+The input may be:
+* PDF documents
+* DOCX documents
+* PPT/PPTX presentations
+* TXT files
+* Markdown files
+* Images (after OCR)
+* Pasted text
+* User prompts
+* Multiple uploaded files together
+
+The generated notes must cover **100% of the available content** without becoming lengthy or verbose.
+
+---
+
+# Core Requirements
+
+## 1. Complete Topic Coverage
+The generated notes must include every important topic present in the source.
+Never skip:
+* Main topics
+* Subtopics
+* Definitions
+* Important concepts
+* Key points
+* Algorithms
+* Formulae
+* Theorems
+* Laws
+* Principles
+* Examples (only if essential)
+* Diagrams (describe briefly if necessary)
+* Tables (summarize)
+* Comparisons
+* Advantages
+* Disadvantages
+* Applications
+* Features
+* Characteristics
+* Classifications
+* Processes
+* Workflows
+* Important facts
+* Conclusions
+
+Every heading and meaningful section from the source should be represented in the notes.
+
+---
+
+# 2. Size and Length Constraints (1/4th Rule)
+Do NOT copy paragraphs.
+Instead:
+* Compress information.
+* Remove unnecessary wording.
+* Eliminate repetition.
+* Keep only meaningful information.
+* Use concise sentences.
+
+Target:
+* **The generated summarized notes MUST be approximately 1/4th (25%) of the length of the original content.**
+* This 1/4th size rule applies to all documents (PDFs, PPTs, DOCs) and any long pasted text or user prompts.
+* (Note: The 1/4th length rule does not apply to image-only uploads like JPG/PNG).
+* Even with this 25% length constraint, you MUST cover ALL topics and explain each topic clearly. Do not skip topics to save space; instead, compress the explanations intelligently so that all concepts are covered in minimum words.
+
+---
+
+# 3. Preserve Hierarchy
+Maintain the logical structure.
+Example:
+Topic
+Definition
+Features
+Types
+Advantages
+Disadvantages
+Applications
+Examples
+Conclusion
+
+Subtopics must appear under their parent topic.
+Never flatten everything into one list.
+
+---
+
+# 4. Intelligent Compression
+Convert long explanations into concise notes.
+Example:
+Long paragraph
+↓
+2–5 concise lines
+without losing important information.
+
+---
+
+# 5. Important Keywords
+Highlight:
+* Important terms
+* Technical vocabulary
+* Definitions
+* Formula names
+* Algorithms
+* Standards
+* Protocols
+
+These should stand out clearly.
+
+---
+
+# 6. Include Every Subtopic
+Even if a subtopic contains only a few lines, include it.
+Never omit sections simply because they are short.
+
+---
+
+# 7. No Hallucinations
+Do not invent information.
+Generate notes strictly from:
+* Uploaded documents
+* OCR text
+* User-pasted text
+* User prompt
+
+If information does not exist, do not create it.
+
+---
+
+# 8. Handle Large Documents
+For long PDFs:
+Read every page.
+Do not summarize only the beginning.
+Ensure coverage of:
+* First page
+* Middle pages
+* Last pages
+* Appendices (if relevant)
+
+Every page contributes to the final notes.
+
+---
+
+# 9. Merge Duplicate Information
+If the same concept appears multiple times:
+Merge it into one concise explanation.
+Avoid duplication.
+
+---
+
+# 10. Ignore Unnecessary Content
+Skip:
+* Headers
+* Footers
+* Page numbers
+* Watermarks
+* Blank pages
+* Decorative elements
+* Repeated titles
+* Navigation text
+
+unless they contain meaningful academic content.
+
+---
+
+# 11. Maintain Technical Accuracy
+Never change:
+* Equations
+* Formulae
+* Units
+* Symbols
+* Mathematical expressions
+* Programming syntax
+* Code snippets (summarize only if appropriate)
+
+---
+
+# 12. Tables
+If tables contain useful information:
+Convert them into concise notes.
+Do not reproduce large tables unless necessary.
+
+---
+
+# 13. Figures
+If diagrams explain an important concept:
+Write a short textual explanation.
+Example:
+OSI Model
+* 7 layers
+* Application → Physical
+* Data flows downward during transmission
+
+---
+
+# 14. Comparisons
+Convert comparisons into compact tables when useful.
+Example:
+SQL vs NoSQL
+Feature | SQL | NoSQL
+instead of long paragraphs.
+
+---
+
+# 15. Definitions
+Definitions should be:
+* One line whenever possible.
+* Maximum two lines if necessary.
+
+---
+
+# 16. Lists
+Where appropriate use:
+* Numbered lists
+* Bullet lists
+* Small tables
+
+Avoid huge paragraphs.
+
+---
+
+# 17. Study-Friendly Notes
+The notes should feel like exam revision notes.
+A student should be able to revise quickly.
+
+---
+
+# 18. Preserve Important Order
+If the document follows a logical order, maintain that order.
+Do not randomly rearrange topics.
+
+---
+
+# 19. Output Format
+Use Markdown.
+Example:
+# Chapter Title
+## Topic
+Short explanation
+### Subtopic
+* Point 1
+* Point 2
+* Point 3
+
+## Next Topic
+...
+
+---
+
+# 20. Conciseness Rule
+Every sentence must add value.
+Remove:
+* filler words
+* repeated ideas
+* unnecessary examples
+* storytelling
+
+---
+
+# 21. Coverage Validation
+Before producing the final notes, internally verify:
+✓ Every chapter included
+✓ Every heading covered
+✓ Every subheading covered
+✓ Every major concept included
+✓ No significant topic omitted
+✓ No duplicated content
+✓ Notes remain concise
+
+Only then generate the final notes.
+
+---
+
+# 22. Quality Goal
+The generated notes should:
+* Cover all topics from the source.
+* Be significantly shorter than the original.
+* Be easy to revise before exams.
+* Preserve all essential concepts.
+* Be accurate and well organized.
+* Be readable in a single pass.
+* Avoid unnecessary detail while ensuring no important topic or subtopic is missed.
+
+The final output should be concise, comprehensive, structured, exam-oriented, and faithful to the source material.
     """
 
     contents = [system_prompt]
@@ -106,28 +370,51 @@ def summarize_notes(all_text: str, gemini_files, model_name: str, has_pdf: bool)
     # Attach uploaded PDF / image files for multimodal summarization
     contents.extend(gemini_files)
 
-    response = model.generate_content(contents)
-    return (response.text or "").strip()
+    max_retries = 3
+    for attempt in range(max_retries):
+        try:
+            print(f"[Backend] Calling Gemini API with model {model_name} (Attempt {attempt + 1}/{max_retries})...")
+            response = client.models.generate_content(
+                model=model_name,
+                contents=contents
+            )
+            print("[Backend] Gemini API generation completed successfully.")        
+            return (response.text or "").strip()
+        except Exception as e:
+            if attempt == max_retries - 1:
+                print(f"[Backend] ERROR: Gemini API call failed after {max_retries} attempts. Exception: {e}")
+                raise e
+            print(f"[Backend] WARNING: Error calling Gemini: {e}. Retrying in {2 ** attempt} seconds...")
+            time.sleep(2 ** attempt)
 
 
-def extract_text_from_docx(file_bytes: bytes) -> str:
-    """Extract plain text from a Word .docx file."""
+def extract_content_from_docx(file_bytes: bytes) -> tuple[str, list[bytes]]:
+    """Extract plain text and images from a Word .docx file."""
     doc = Document(BytesIO(file_bytes))
     parts = [p.text.strip() for p in doc.paragraphs if p.text.strip()]
-    return "\n".join(parts)
+    
+    images = []
+    for rel in doc.part.rels.values():
+        if "image" in rel.reltype:
+            images.append(rel.target_part.blob)
+            
+    return "\n".join(parts), images
 
 
-def extract_text_from_pptx(file_bytes: bytes) -> str:
-    """Extract plain text from a PowerPoint .pptx file."""
+def extract_content_from_pptx(file_bytes: bytes) -> tuple[str, list[bytes]]:
+    """Extract plain text and images from a PowerPoint .pptx file."""
     prs = Presentation(BytesIO(file_bytes))
     texts = []
+    images = []
     for slide in prs.slides:
         for shape in slide.shapes:
-            if hasattr(shape, "text"):
+            if hasattr(shape, "text") and shape.text:
                 t = shape.text.strip()
                 if t:
                     texts.append(t)
-    return "\n".join(texts)
+            if hasattr(shape, "image") and shape.image:
+                images.append(shape.image.blob)
+    return "\n".join(texts), images
 
 
 def render_footer():
@@ -351,11 +638,9 @@ def main():
 
                     # Enforce 50 MB limit for each uploaded file
                     if uploaded.size > max_bytes:
-                        st.warning(
-                            f"'{uploaded.name}' is larger than 50 MB. "
-                            "Please upload a file less than 50 MB to proceed further."
-                        )
-                        continue
+                        loader_placeholder.empty()
+                        st.error(f"Error: Selected file '{uploaded.name}' must be less than 50 MB.")
+                        st.stop()
 
                     # Plain text files: read locally and append to text
                     if suffix == ".txt":
@@ -365,25 +650,55 @@ def main():
                         finally:
                             uploaded.seek(0)
 
-                    # Word documents: extract text locally, do not upload to Gemini as files
+                    # Word documents: extract text and images locally
                     elif suffix in [".doc", ".docx"]:
                         try:
                             file_bytes = uploaded.read()
-                            doc_text = extract_text_from_docx(file_bytes)
+                            doc_text, doc_images = extract_content_from_docx(file_bytes)
                             if doc_text:
                                 text_parts.append(doc_text)
+                            for img_bytes in doc_images:
+                                fd, temp_path = tempfile.mkstemp(suffix=".png")
+                                os.close(fd)
+                                try:
+                                    print(f"[Backend] Uploading extracted image from '{uploaded.name}' to Gemini...")
+                                    with open(temp_path, "wb") as tmp_file:
+                                        tmp_file.write(img_bytes)
+                                    gemini_file = client.files.upload(file=temp_path)
+                                    gemini_files.append(gemini_file)
+                                    print(f"[Backend] Successfully uploaded image as {gemini_file.name}")
+                                finally:
+                                    try:
+                                        os.remove(temp_path)
+                                    except OSError:
+                                        pass
                         except Exception as doc_err:
                             st.warning(f"Could not read Word document '{uploaded.name}': {doc_err}")
                         finally:
                             uploaded.seek(0)
 
-                    # PowerPoint presentations: extract text locally
+                    # PowerPoint presentations: extract text and images locally
                     elif suffix in [".ppt", ".pptx"]:
                         try:
                             file_bytes = uploaded.read()
-                            ppt_text = extract_text_from_pptx(file_bytes)
+                            ppt_text, ppt_images = extract_content_from_pptx(file_bytes)
                             if ppt_text:
                                 text_parts.append(ppt_text)
+                            for img_bytes in ppt_images:
+                                fd, temp_path = tempfile.mkstemp(suffix=".png")
+                                os.close(fd)
+                                try:
+                                    print(f"[Backend] Uploading extracted image from '{uploaded.name}' to Gemini...")
+                                    with open(temp_path, "wb") as tmp_file:
+                                        tmp_file.write(img_bytes)
+                                    gemini_file = client.files.upload(file=temp_path)
+                                    gemini_files.append(gemini_file)
+                                    print(f"[Backend] Successfully uploaded image as {gemini_file.name}")
+                                finally:
+                                    try:
+                                        os.remove(temp_path)
+                                    except OSError:
+                                        pass
                         except Exception as ppt_err:
                             st.warning(f"Could not read PowerPoint file '{uploaded.name}': {ppt_err}")
                         finally:
@@ -400,11 +715,25 @@ def main():
                         fd, temp_path = tempfile.mkstemp(suffix=suffix)
                         os.close(fd)
                         try:
+                            print(f"[Backend] Uploading '{uploaded.name}' to Gemini...")
                             with open(temp_path, "wb") as tmp_file:
                                 tmp_file.write(uploaded.getbuffer())
 
-                            gemini_file = genai.upload_file(path=temp_path)
+                            gemini_file = client.files.upload(file=temp_path)
+                            
+                            # Wait for processing (essential for large PDFs)
+                            state = getattr(gemini_file.state, "name", gemini_file.state) if hasattr(gemini_file, "state") else None
+                            if state == "PROCESSING":
+                                print(f"[Backend] Waiting for file '{gemini_file.name}' to be processed...")
+                                while state == "PROCESSING":
+                                    time.sleep(2)
+                                    gemini_file = client.files.get(name=gemini_file.name)
+                                    state = getattr(gemini_file.state, "name", gemini_file.state) if hasattr(gemini_file, "state") else None
+                                if state == "FAILED":
+                                    raise Exception("Gemini failed to process the uploaded file.")
+                                    
                             gemini_files.append(gemini_file)
+                            print(f"[Backend] Successfully uploaded '{uploaded.name}' as {gemini_file.name}")
                         finally:
                             try:
                                 os.remove(temp_path)
@@ -416,150 +745,162 @@ def main():
 
                 try:
                     summary = summarize_notes(combined_text, gemini_files, selected_model, has_pdf)
+                        
                     if not summary:
                         st.error("Gemini returned an empty summary. Please try again.")
                     else:
                         st.session_state.summary = summary
                         st.success("✅ Summary generated successfully!")
+                        st.rerun()
                 except Exception as e:
                     st.error(f"❌ Error while generating summary: {e}")
                 finally:
-                    # Remove the overlay loader once done
+                    # Remove the overlay loader in case of error
                     loader_placeholder.empty()
+                    # Clean up uploaded files from Gemini servers to prevent storage quota exhaustion
+                    for g_file in gemini_files:
+                        try:
+                            print(f"[Backend] Cleaning up: Deleting {g_file.name} from Gemini servers...")
+                            client.files.delete(name=g_file.name)
+                            print(f"[Backend] Successfully deleted {g_file.name}.")
+                        except Exception as delete_err:
+                            print(f"[Backend] WARNING: Failed to delete {g_file.name}: {delete_err}")
 
     # Show the summary if available
     if st.session_state.summary:
         st.subheader("📚 Summarized Notes")
         st.markdown(st.session_state.summary)
 
-        # Print / Save as PDF using browser (exact visual copy)
-        if st.button("🖨️ Print / Save as PDF", key="print_summary"):
-            # Open a minimal HTML document containing only the summarized notes,
-            # then trigger the browser print dialog. This keeps formatting very
-            # close to what is shown in the app while giving the browser full
-            # control over PDF generation.
-            summary_html = markdown(st.session_state.summary, extensions=["tables"])
-            printable_html = f"""
-            <html>
-              <head>
-                <meta charset="utf-8" />
-                <title>Summarized Notes</title>
-                <style>
-                  /* Screen styles */
-                  body {{
-                    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-                    padding: 24px;
-                    background-color: #020617;
-                    color: #e5e7eb;
-                  }}
-                  h1, h2, h3, h4 {{
-                    color: #60a5fa;
-                    margin-top: 1.4rem;
-                    margin-bottom: 0.6rem;
-                  }}
-                  p {{
-                    margin: 0.4rem 0;
-                    line-height: 1.5;
-                  }}
-                  ul, ol {{
-                    margin: 0.4rem 0 0.8rem 1.5rem;
-                  }}
-                  table {{
-                    border-collapse: collapse;
-                    width: 100%;
-                    margin: 1rem 0;
-                  }}
-                  th, td {{
-                    border: 1px solid #4b5563;
-                    padding: 0.4rem 0.6rem;
-                  }}
-                  th {{
-                    background-color: #111827;
-                  }}
-                  
-                  /* Print/PDF styles - Remove headers, footers, and overlays */
-                  @media print {{
-                    @page {{
-                      margin: 0.75in;
-                      size: auto;
-                    }}
-                    
-                    /* Remove all browser default headers and footers */
-                    @page {{
-                      margin-top: 0.5in;
-                      margin-bottom: 0.5in;
-                    }}
-                    
-                    /* Hide any overlays or loaders */
-                    .overlay-loader,
-                    .overlay-loader-circle,
-                    .overlay-loader-text,
-                    header,
-                    footer {{
-                      display: none !important;
-                      visibility: hidden !important;
-                    }}
-                    
-                    /* Remove blur effects */
-                    * {{
-                      backdrop-filter: none !important;
-                      -webkit-backdrop-filter: none !important;
-                      filter: none !important;
-                      -webkit-filter: none !important;
-                    }}
-                    
-                    /* Clear, readable content */
-                    body {{
-                      background: white !important;
-                      color: #000000 !important;
-                      padding: 0 !important;
-                      -webkit-print-color-adjust: exact;
-                      print-color-adjust: exact;
-                    }}
-                    
-                    /* Black text for better readability */
-                    h1, h2, h3, h4, h5, h6 {{
-                      color: #000000 !important;
-                      page-break-after: avoid;
-                    }}
-                    
-                    p, li, td, th, span, div {{
-                      color: #000000 !important;
-                    }}
-                    
-                    /* Remove shadows that might cause blur */
-                    * {{
-                      box-shadow: none !important;
-                      text-shadow: none !important;
-                    }}
-                    
-                    /* Ensure tables print well */
-                    table {{
-                      border-collapse: collapse;
-                      page-break-inside: avoid;
-                    }}
-                    
-                    th, td {{
-                      border: 1px solid #000000 !important;
-                      padding: 0.4rem 0.6rem;
-                    }}
-                    
-                    th {{
-                      background-color: #f0f0f0 !important;
-                      color: #000000 !important;
-                    }}
-                  }}
-                </style>
-              </head>
-              <body>
-                {summary_html}
-                <script>
-                  window.onload = function() {{ window.print(); }};
-                </script>
-              </body>
-            </html>
-            """
-            components.html(printable_html, height=0, width=0)
+        # Action button
+        with st.container():
+            # Print / Save as PDF using browser (exact visual copy)
+            if st.button("🖨️ Print / Save as PDF", key="print_summary"):
+                # Open a minimal HTML document containing only the summarized notes,
+                # then trigger the browser print dialog. This keeps formatting very
+                # close to what is shown in the app while giving the browser full
+                # control over PDF generation.
+                summary_html = markdown(st.session_state.summary, extensions=["tables"])
+                printable_html = f"""
+                <html>
+                  <head>
+                    <meta charset="utf-8" />
+                    <title>Summarized Notes</title>
+                    <style>
+                      /* Screen styles */
+                      body {{
+                        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+                        padding: 24px;
+                        background-color: #020617;
+                        color: #e5e7eb;
+                      }}
+                      h1, h2, h3, h4 {{
+                        color: #60a5fa;
+                        margin-top: 1.4rem;
+                        margin-bottom: 0.6rem;
+                      }}
+                      p {{
+                        margin: 0.4rem 0;
+                        line-height: 1.5;
+                      }}
+                      ul, ol {{
+                        margin: 0.4rem 0 0.8rem 1.5rem;
+                      }}
+                      table {{
+                        border-collapse: collapse;
+                        width: 100%;
+                        margin: 1rem 0;
+                      }}
+                      th, td {{
+                        border: 1px solid #4b5563;
+                        padding: 0.4rem 0.6rem;
+                      }}
+                      th {{
+                        background-color: #111827;
+                      }}
+                      
+                      /* Print/PDF styles - Remove headers, footers, and overlays */
+                      @media print {{
+                        @page {{
+                          margin: 0.75in;
+                          size: auto;
+                        }}
+                        
+                        /* Remove all browser default headers and footers */
+                        @page {{
+                          margin-top: 0.5in;
+                          margin-bottom: 0.5in;
+                        }}
+                        
+                        /* Hide any overlays or loaders */
+                        .overlay-loader,
+                        .overlay-loader-circle,
+                        .overlay-loader-text,
+                        header,
+                        footer {{
+                          display: none !important;
+                          visibility: hidden !important;
+                        }}
+                        
+                        /* Remove blur effects */
+                        * {{
+                          backdrop-filter: none !important;
+                          -webkit-backdrop-filter: none !important;
+                          filter: none !important;
+                          -webkit-filter: none !important;
+                        }}
+                        
+                        /* Clear, readable content */
+                        body {{
+                          background: white !important;
+                          color: #000000 !important;
+                          padding: 0 !important;
+                          -webkit-print-color-adjust: exact;
+                          print-color-adjust: exact;
+                        }}
+                        
+                        /* Black text for better readability */
+                        h1, h2, h3, h4, h5, h6 {{
+                          color: #000000 !important;
+                          page-break-after: avoid;
+                        }}
+                        
+                        p, li, td, th, span, div {{
+                          color: #000000 !important;
+                        }}
+                        
+                        /* Remove shadows that might cause blur */
+                        * {{
+                          box-shadow: none !important;
+                          text-shadow: none !important;
+                        }}
+                        
+                        /* Ensure tables print well */
+                        table {{
+                          border-collapse: collapse;
+                          page-break-inside: avoid;
+                        }}
+                        
+                        th, td {{
+                          border: 1px solid #000000 !important;
+                          padding: 0.4rem 0.6rem;
+                        }}
+                        
+                        th {{
+                          background-color: #f0f0f0 !important;
+                          color: #000000 !important;
+                        }}
+                      }}
+                    </style>
+                  </head>
+                  <body>
+                    {summary_html}
+                    <script>
+                      window.onload = function() {{ window.print(); }};
+                    </script>
+                  </body>
+                </html>
+                """
+                components.html(printable_html, height=0, width=0)
 
     # Render footer
     render_footer()

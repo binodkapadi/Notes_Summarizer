@@ -1,6 +1,6 @@
 # NotesSummarizer
 
-The Note Summarizer processes long pasted notes and uploaded files, including text-based PDF, DOCX, PPT, and images (JPEG/PNG), converting them into clear and human-friendly notes. It analyzes the entire document thoroughly and produces well-structured, easy-to-read summaries with proper spacing, alignment, and topic-wise clarity. The tool works best with digitally generated or printed text (such as books, typed notes, or exported documents) and may not accurately read handwritten content. All extracted information is presented in a simple, understandable, and organized format for easy revision.
+The Note Summarizer processes long pasted notes,any prompt and uploaded files, including text-based PDF, DOCX, PPT and images (JPEG/PNG) converting them into clear and human-friendly notes. It analyzes the entire document thoroughly and produces well-structured, easy-to-read summaries with proper spacing, alignment, and topic-wise clarity. Supports both printed and handwritten documents. For the best results, use clear, high-quality scans or images. Accuracy may vary for unclear or difficult-to-read handwriting. All extracted information is presented in a simple, understandable, and organized format for easy revision.
 
 # Deployment Link
 
@@ -61,13 +61,9 @@ First put all required dependencies inside requirements.txt file and then run:
 
     pip install -r requirements.txt
 
-Or install manually if needed:
-
-    pip install streamlit google-generativeai python-dotenv python-pptx python-docx PyPDF2 pillow
-
 #### Configure Environment Variables (.env)
 
-     GEMINI_API_KEY=your_gemini_api_key
+    GEMINI_API_KEY=your_gemini_api_key
 
 Get Gemini API Key from: https://aistudio.google.com/app/apikey
 
@@ -106,7 +102,7 @@ The Note Summarizer is an AI-powered tool that converts long pasted notes and up
 
     - Backend: Python, Streamlit
     - Frontend: Streamlit Components, Custom CSS
-    - AI / LLM Models: Google Gemini 2.0 Flash (google-generativeai SDK)
+    - AI / LLM Models: Google Gemini 2.0 Flash (google-genai SDK)
     - Deployment / Hosting: Streamlit Cloud
     - Version Control: Git and GitHub
 
