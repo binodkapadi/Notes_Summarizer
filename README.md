@@ -6,6 +6,10 @@ The Note Summarizer processes long pasted notes,any prompt and uploaded files, i
 
 Deployment (Streamlit) = https://binodkapadi-notessummarizer.streamlit.app/
 
+## 📺 YouTube Video 
+
+**Link ->** https://youtu.be/J6ENj_P7Nv8
+
 # PROJECT SETUP
 
 pip = Python Package Installer
